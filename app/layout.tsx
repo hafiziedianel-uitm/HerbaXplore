@@ -3,8 +3,8 @@ import './globals.css'; // Global styles
 import { ThemeProvider } from '@/components/ThemeProvider';
 
 export const metadata: Metadata = {
-  title: 'My Google AI Studio App',
-  description: 'My Google AI Studio App',
+  title: 'HerbalXplore: Farmasi UiTM',
+  description: 'Interactive educational tool for exploring Malaysian medicinal plants, their active compounds, 3D molecular structures, and pharmacological properties.',
 };
 
 export default function RootLayout({children}: {children: React.ReactNode}) {
