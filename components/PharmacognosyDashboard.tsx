@@ -104,16 +104,28 @@ export function PharmacognosyDashboard() {
             </div>
           )}
 
-          {/* Theme Toggle */}
-          {mounted && (
+          <div className="flex items-center gap-2">
+            {/* Search Plants Toggle */}
             <button
-              onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
-              className="p-2 rounded-full bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 hover:bg-stone-200 dark:hover:bg-stone-700 transition-colors"
-              aria-label="Toggle dark mode"
+              onClick={() => setLeftSidebarCollapsed(!leftSidebarCollapsed)}
+              className="flex items-center gap-2 px-3 py-2 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-200 dark:hover:bg-emerald-800/50 transition-colors"
+              aria-label="Search Plants"
             >
-              {resolvedTheme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+              <Search size={18} />
+              <span className="text-sm font-bold hidden sm:inline-block">Search Plants</span>
             </button>
-          )}
+
+            {/* Theme Toggle */}
+            {mounted && (
+              <button
+                onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
+                className="p-2 rounded-full bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 hover:bg-stone-200 dark:hover:bg-stone-700 transition-colors"
+                aria-label="Toggle dark mode"
+              >
+                {resolvedTheme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+              </button>
+            )}
+          </div>
         </div>
       </header>
 
@@ -191,20 +203,12 @@ export function PharmacognosyDashboard() {
         <div className="flex-1 relative overflow-hidden flex flex-col bg-stone-200/50 dark:bg-stone-950/50 transition-colors duration-300">
           {/* Mobile Menu Toggles */}
           {isMobile && (
-            <>
-              <button 
-                onClick={() => setLeftSidebarCollapsed(false)}
-                className="absolute bottom-4 left-4 z-30 pointer-events-auto bg-white/90 dark:bg-stone-900/90 p-2.5 rounded-xl shadow-lg border border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-300"
-              >
-                <Menu size={20} />
-              </button>
-              <button 
-                onClick={() => setRightSidebarCollapsed(false)}
-                className="absolute top-4 right-4 z-30 pointer-events-auto bg-white/90 dark:bg-stone-900/90 p-2.5 rounded-xl shadow-lg border border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-300"
-              >
-                <ChevronLeft size={20} />
-              </button>
-            </>
+            <button 
+              onClick={() => setRightSidebarCollapsed(false)}
+              className="absolute top-4 right-4 z-30 pointer-events-auto bg-white/90 dark:bg-stone-900/90 p-2.5 rounded-xl shadow-lg border border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-300"
+            >
+              <ChevronLeft size={20} />
+            </button>
           )}
 
           <PlantViewer 
