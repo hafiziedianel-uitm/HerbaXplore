@@ -4,7 +4,6 @@ import { Plant, PlantPart } from "@/lib/data";
 import { motion, AnimatePresence } from "motion/react";
 import Image from "next/image";
 import { useState } from "react";
-import { Search, ArrowRight } from "lucide-react";
 
 interface PlantViewerProps {
   plant: Plant;
@@ -102,10 +101,10 @@ export function PlantViewer({ plant, selectedPart, onPartClick, onPartDoubleClic
               </div>
               
               {/* Label */}
-              <div className={`absolute left-1/2 -translate-x-1/2 -bottom-10 px-4 py-2 rounded-full text-sm font-bold tracking-wide transition-all duration-300 shadow-lg whitespace-nowrap ${
-                isActive 
-                  ? 'bg-emerald-600 text-white translate-y-0 opacity-100' 
-                  : 'bg-white/95 dark:bg-stone-800/95 text-stone-700 dark:text-stone-300 -translate-y-2 opacity-0 group-hover:opacity-100 group-hover:translate-y-0'
+              <div className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 px-4 py-2 rounded-full text-sm font-bold tracking-wide transition-all duration-300 shadow-lg whitespace-nowrap pointer-events-none ${
+                isSelected 
+                  ? 'bg-emerald-600 text-white scale-100 opacity-100' 
+                  : 'bg-white/95 dark:bg-stone-800/95 text-stone-700 dark:text-stone-300 scale-95 opacity-0'
               }`}>
                 {part.name}
               </div>
@@ -119,29 +118,6 @@ export function PlantViewer({ plant, selectedPart, onPartClick, onPartDoubleClic
         <h2 className="text-xl sm:text-3xl font-bold text-stone-800 dark:text-stone-100">{plant.name}</h2>
         <p className="text-xs sm:text-base text-stone-500 dark:text-stone-400 italic font-serif">{plant.scientificName}</p>
       </div>
-
-      {/* Indicator pointing to DetailsPanel */}
-      <AnimatePresence>
-        {selectedPart && (
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            className="absolute right-4 top-1/2 -translate-y-1/2 flex flex-col items-center gap-2 text-emerald-600 dark:text-emerald-400 pointer-events-none z-10"
-          >
-            <div className="bg-white/95 dark:bg-stone-900/95 backdrop-blur-md px-4 py-2.5 rounded-full shadow-lg border border-emerald-200 dark:border-emerald-800/50 flex items-center gap-2 transition-colors duration-300">
-              <Search size={16} className="animate-pulse text-emerald-500" />
-              <span className="text-sm font-bold tracking-wide">Search Compounds</span>
-              <motion.div
-                animate={{ x: [0, 4, 0] }}
-                transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
-              >
-                <ArrowRight size={16} />
-              </motion.div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 }
