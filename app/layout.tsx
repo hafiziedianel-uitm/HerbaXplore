@@ -4,8 +4,8 @@ import { ThemeProvider } from '@/components/ThemeProvider';
 import Script from 'next/script';
 
 export const metadata: Metadata = {
-  title: 'My Google AI Studio App',
-  description: 'My Google AI Studio App',
+  title: 'HerbaXplore UiTM',
+  description: 'Fakulti Farmasi UiTM',
 };
 
 export default function RootLayout({children}: {children: React.ReactNode}) {
