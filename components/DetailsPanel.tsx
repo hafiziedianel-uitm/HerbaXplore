@@ -4,99 +4,87 @@ import { Plant, PlantPart, Compound } from "@/lib/data";
 import { motion, AnimatePresence } from "motion/react";
 import { ArrowLeft, Beaker, Activity, Pill, ShoppingCart, Info, Dna, Maximize2, Headset, X, Search, Download, Network } from "lucide-react";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
-function Interactive3DPlaceholder({ compound, isVRMode, isMobile }: { compound: Compound, isVRMode: boolean, isMobile?: boolean }) {
-  const [rotation, setRotation] = useState({ x: 0, y: 0 });
-  const [pan, setPan] = useState({ x: 0, y: 0 });
-  const [zoom, setZoom] = useState(1);
-  const [isDragging, setIsDragging] = useState(false);
-  const [dragMode, setDragMode] = useState<'rotate' | 'pan' | null>(null);
-  const [lastPos, setLastPos] = useState({ x: 0, y: 0 });
+function Interactive3DViewer({ compound, isVRMode, isMobile }: { compound: Compound, isVRMode: boolean, isMobile?: boolean }) {
+  const viewerRef = useRef<HTMLDivElement>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
-  const handleMouseDown = (e: React.MouseEvent) => {
-    setIsDragging(true);
-    setLastPos({ x: e.clientX, y: e.clientY });
-    if (e.button === 2 || e.shiftKey) {
-      setDragMode('pan');
+  useEffect(() => {
+    let viewer: any = null;
+    
+    const initViewer = async () => {
+      if (!viewerRef.current || !(window as any).$3Dmol) return;
+      
+      try {
+        setLoading(true);
+        setError(false);
+        
+        // Clear previous
+        viewerRef.current.innerHTML = '';
+        
+        viewer = (window as any).$3Dmol.createViewer(viewerRef.current, {
+          backgroundColor: isVRMode ? 'black' : '#1c1917', // stone-900
+        });
+        
+        // Fetch SDF from PubChem
+        const response = await fetch(`https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/${encodeURIComponent(compound.name)}/SDF?record_type=3d`);
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch 3D structure');
+        }
+        
+        const sdfData = await response.text();
+        
+        viewer.addModel(sdfData, "sdf");
+        viewer.setStyle({}, { stick: { radius: 0.15 }, sphere: { scale: 0.3 } });
+        viewer.zoomTo();
+        viewer.render();
+        
+        setLoading(false);
+      } catch (err) {
+        console.error("Error loading 3D model:", err);
+        setError(true);
+        setLoading(false);
+      }
+    };
+
+    // Give the script a moment to load if it hasn't
+    if ((window as any).$3Dmol) {
+      initViewer();
     } else {
-      setDragMode('rotate');
+      const checkInterval = setInterval(() => {
+        if ((window as any).$3Dmol) {
+          clearInterval(checkInterval);
+          initViewer();
+        }
+      }, 100);
+      return () => clearInterval(checkInterval);
     }
-  };
 
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging) return;
-    const deltaX = e.clientX - lastPos.x;
-    const deltaY = e.clientY - lastPos.y;
-
-    if (dragMode === 'rotate') {
-      setRotation(prev => ({
-        x: prev.x - deltaY * 0.5,
-        y: prev.y + deltaX * 0.5
-      }));
-    } else if (dragMode === 'pan') {
-      setPan(prev => ({
-        x: prev.x + deltaX,
-        y: prev.y + deltaY
-      }));
-    }
-    setLastPos({ x: e.clientX, y: e.clientY });
-  };
-
-  const handleMouseUp = () => {
-    setIsDragging(false);
-    setDragMode(null);
-  };
-
-  const handleWheel = (e: React.WheelEvent) => {
-    setZoom(prev => Math.max(0.2, Math.min(prev - e.deltaY * 0.005, 5)));
-  };
-
-  const handleContextMenu = (e: React.MouseEvent) => e.preventDefault();
-
-  const scene = (
-    <motion.div 
-      style={{
-        x: pan.x,
-        y: pan.y,
-        scale: zoom,
-        rotateX: rotation.x,
-        rotateY: rotation.y,
-        transformStyle: "preserve-3d"
-      }}
-      className="relative flex items-center justify-center w-64 h-64"
-    >
-      {/* 3D placeholder visualization */}
-      <div className="absolute inset-0 border-4 border-emerald-500/20 rounded-full" style={{ transform: 'rotateX(75deg) translateZ(-20px)' }} />
-      <div className="absolute inset-0 border-4 border-emerald-500/20 rounded-full" style={{ transform: 'rotateY(75deg) translateZ(-20px)' }} />
-      <div className="absolute inset-0 border-4 border-emerald-500/20 rounded-full" style={{ transform: 'rotateZ(75deg) translateZ(-20px)' }} />
-      
-      <Dna size={120} className="text-emerald-500 drop-shadow-[0_0_15px_rgba(16,185,129,0.5)]" style={{ transform: 'translateZ(30px)' }} />
-      
-      {/* Floating particles */}
-      {[...Array(6)].map((_, i) => (
-        <div 
-          key={i}
-          className="absolute w-3 h-3 bg-emerald-400 rounded-full shadow-[0_0_10px_rgba(52,211,153,0.8)]"
-          style={{
-            transform: `rotateY(${i * 60}deg) translateZ(80px) rotateX(${i * 30}deg)`,
-          }}
-        />
-      ))}
-    </motion.div>
-  );
+    return () => {
+      if (viewer) {
+        viewer.removeAllModels();
+      }
+    };
+  }, [compound.name, isVRMode]);
 
   return (
-    <div 
-      className={`flex-1 relative flex items-center justify-center bg-black overflow-hidden cursor-grab active:cursor-grabbing ${isVRMode ? 'bg-stone-950' : ''}`}
-      onMouseDown={handleMouseDown}
-      onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseUp}
-      onMouseLeave={handleMouseUp}
-      onWheel={handleWheel}
-      onContextMenu={handleContextMenu}
-    >
-      {/* Controls hint */}
+    <div className="flex-1 relative w-full h-full bg-stone-900 overflow-hidden">
+      {loading && (
+        <div className="absolute inset-0 flex items-center justify-center z-10 bg-stone-900/80 backdrop-blur-sm">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500"></div>
+        </div>
+      )}
+      {error && (
+        <div className="absolute inset-0 flex flex-col items-center justify-center z-10 bg-stone-900/80 backdrop-blur-sm text-stone-400">
+          <p>Could not load 3D structure for {compound.name}</p>
+          <p className="text-sm mt-2">Try another compound.</p>
+        </div>
+      )}
+      <div ref={viewerRef} className="w-full h-full" style={{ position: 'relative' }} />
+      
       {!isVRMode && !isMobile && (
         <div className="absolute top-6 left-6 text-stone-400 text-xs flex flex-col gap-3 pointer-events-none z-10 bg-stone-900/50 p-4 rounded-xl border border-stone-800 backdrop-blur-md">
           <div className="flex items-center gap-3">
@@ -104,46 +92,9 @@ function Interactive3DPlaceholder({ compound, isVRMode, isMobile }: { compound: 
             <span>Left Click + Drag to Rotate</span>
           </div>
           <div className="flex items-center gap-3">
-            <div className="w-6 h-6 rounded bg-stone-800 border border-stone-700 flex items-center justify-center text-stone-300 font-bold">R</div> 
-            <span>Right Click + Drag to Pan</span>
-          </div>
-          <div className="flex items-center gap-3">
             <div className="w-6 h-6 rounded bg-stone-800 border border-stone-700 flex items-center justify-center text-stone-300 font-bold">↕</div> 
             <span>Scroll Wheel to Zoom</span>
           </div>
-        </div>
-      )}
-
-      {isVRMode ? (
-        <div className="flex w-full h-full items-center justify-center gap-4 p-8 relative">
-          {/* Vignette overlay for VR feel */}
-          <div className="absolute inset-0 pointer-events-none shadow-[inset_0_0_150px_rgba(0,0,0,1)] z-10" />
-          
-          {/* Left Eye */}
-          <div className="w-1/2 h-full flex items-center justify-center bg-stone-900 rounded-3xl overflow-hidden border-4 border-stone-800 relative" style={{ perspective: "400px" }}>
-            <div className="absolute inset-0 shadow-[inset_0_0_80px_rgba(0,0,0,0.8)] pointer-events-none z-10" />
-            {scene}
-          </div>
-          
-          {/* Right Eye */}
-          <div className="w-1/2 h-full flex items-center justify-center bg-stone-900 rounded-3xl overflow-hidden border-4 border-stone-800 relative" style={{ perspective: "400px" }}>
-            <div className="absolute inset-0 shadow-[inset_0_0_80px_rgba(0,0,0,0.8)] pointer-events-none z-10" />
-            {/* Slight offset for stereoscopic effect */}
-            <div style={{ transform: 'translateX(-10px)' }}>
-              {scene}
-            </div>
-          </div>
-        </div>
-      ) : (
-        <div className="w-full h-full flex items-center justify-center" style={{ perspective: "1000px" }}>
-          {scene}
-        </div>
-      )}
-
-      {!isVRMode && (
-        <div className="absolute bottom-8 text-center pointer-events-none bg-stone-900/60 px-6 py-3 rounded-2xl backdrop-blur-md border border-stone-800 z-10">
-          <p className="text-stone-300 text-lg font-medium">{compound.structure3DPlaceholder}</p>
-          <p className="text-stone-500 text-sm mt-1">Upload .pdb or .pdbqt to enable full 3D and VR features.</p>
         </div>
       )}
     </div>
@@ -617,7 +568,7 @@ export function DetailsPanel({
               </div>
               
               {/* Modal Body */}
-              <Interactive3DPlaceholder compound={compound} isVRMode={isVRMode} isMobile={isMobile} />
+              <Interactive3DViewer compound={compound} isVRMode={isVRMode} isMobile={isMobile} />
             </motion.div>
           </motion.div>
         )}
