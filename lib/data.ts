@@ -40,7 +40,7 @@ export const plantsData: Plant[] = [
     name: "Misai Kucing",
     scientificName: "Orthosiphon aristatus",
     description: "A medicinal herb widely grown in Southeast Asia, known for its white or purple flowers bearing long, protruding stamens that resemble cat's whiskers. Traditionally used for treating kidney diseases, bladder inflammation, gout, and diabetes.",
-    imageUrl: "misai_kucing.jpg",
+    imageUrl: "/misai_kucing.jpg",
     marketAvailability: "Commonly available as dried leaves for tea, standardized extracts in capsules, and liquid tinctures in health stores across Southeast Asia and globally.",
     parts: [
       {
