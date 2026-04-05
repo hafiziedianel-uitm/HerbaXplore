@@ -114,7 +114,7 @@ export function PlantViewer({ plant, selectedPart, onPartClick, onPartDoubleClic
       </div>
 
       {/* Plant Title Overlay */}
-      <div className="absolute bottom-4 left-4 sm:bottom-8 sm:left-8 bg-white/90 dark:bg-stone-900/90 backdrop-blur-sm px-4 py-3 sm:px-6 sm:py-4 rounded-xl sm:rounded-2xl shadow-lg border border-stone-200/50 dark:border-stone-800/50 transition-colors duration-300">
+      <div className="absolute top-4 left-4 sm:top-8 sm:left-8 bg-white/90 dark:bg-stone-900/90 backdrop-blur-sm px-4 py-3 sm:px-6 sm:py-4 rounded-xl sm:rounded-2xl shadow-lg border border-stone-200/50 dark:border-stone-800/50 transition-colors duration-300 z-20">
         <h2 className="text-xl sm:text-3xl font-bold text-stone-800 dark:text-stone-100">{plant.name}</h2>
         <p className="text-xs sm:text-base text-stone-500 dark:text-stone-400 italic font-serif">{plant.scientificName}</p>
       </div>

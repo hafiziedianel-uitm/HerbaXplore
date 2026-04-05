@@ -3,8 +3,8 @@ import './globals.css'; // Global styles
 import { ThemeProvider } from '@/components/ThemeProvider';
 
 export const metadata: Metadata = {
-  title: 'My Google AI Studio App',
-  description: 'My Google AI Studio App',
+  title: 'HerbaXplore UiTM',
+  description: 'Project for KIK 2026',
 };
 
 export default function RootLayout({children}: {children: React.ReactNode}) {

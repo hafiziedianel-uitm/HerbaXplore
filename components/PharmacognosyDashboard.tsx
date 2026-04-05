@@ -191,20 +191,20 @@ export function PharmacognosyDashboard() {
         <div className="flex-1 relative overflow-hidden flex flex-col bg-stone-200/50 dark:bg-stone-950/50 transition-colors duration-300">
           {/* Mobile Menu Toggles */}
           {isMobile && (
-            <div className="absolute top-4 inset-x-4 flex justify-between z-30 pointer-events-none">
+            <>
               <button 
                 onClick={() => setLeftSidebarCollapsed(false)}
-                className="pointer-events-auto bg-white/90 dark:bg-stone-900/90 p-2.5 rounded-xl shadow-lg border border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-300"
+                className="absolute bottom-4 left-4 z-30 pointer-events-auto bg-white/90 dark:bg-stone-900/90 p-2.5 rounded-xl shadow-lg border border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-300"
               >
                 <Menu size={20} />
               </button>
               <button 
                 onClick={() => setRightSidebarCollapsed(false)}
-                className="pointer-events-auto bg-white/90 dark:bg-stone-900/90 p-2.5 rounded-xl shadow-lg border border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-300"
+                className="absolute top-4 right-4 z-30 pointer-events-auto bg-white/90 dark:bg-stone-900/90 p-2.5 rounded-xl shadow-lg border border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-300"
               >
                 <ChevronLeft size={20} />
               </button>
-            </div>
+            </>
           )}
 
           <PlantViewer 
