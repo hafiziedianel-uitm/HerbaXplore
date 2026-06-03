@@ -30,8 +30,10 @@ const nextConfig: NextConfig = {
         pathname: '/**',
       },
     ],
+    unoptimized: true,
   },
-  distDir: process.env.BUILD_DIR || '.next',
+  output: 'export',
+  distDir: 'dist',
   transpilePackages: ['motion'],
   webpack: (config, {dev}) => {
     // HMR is disabled in AI Studio via DISABLE_HMR env var.
