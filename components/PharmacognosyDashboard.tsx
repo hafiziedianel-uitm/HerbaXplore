@@ -15,6 +15,24 @@ export function PharmacognosyDashboard() {
   const [selectedCompound, setSelectedCompound] = useState<Compound | null>(null);
   const [leftSidebarCollapsed, setLeftSidebarCollapsed] = useState(true);
   const [rightSidebarCollapsed, setRightSidebarCollapsed] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredPlants = plantsData.filter((p) => {
+    if (!searchQuery) return true;
+    const query = searchQuery.toLowerCase();
+    
+    if (p.name.toLowerCase().includes(query)) return true;
+    if (p.scientificName?.toLowerCase().includes(query)) return true;
+    
+    // Search through parts and compounds
+    for (const part of p.parts) {
+      for (const compound of part.compounds) {
+        if (compound.name.toLowerCase().includes(query)) return true;
+      }
+    }
+
+    return false;
+  });
 
   // Initialize sidebars based on mobile status
   useEffect(() => {
@@ -30,6 +48,7 @@ export function PharmacognosyDashboard() {
   const handlePartClick = (part: PlantPart) => {
     setSelectedPart(part);
     setSelectedCompound(null);
+    setRightSidebarCollapsed(false);
   };
 
   const handlePartDoubleClick = (part: PlantPart) => {
@@ -108,11 +127,11 @@ export function PharmacognosyDashboard() {
             {/* Search Plants Toggle */}
             <button
               onClick={() => setLeftSidebarCollapsed(!leftSidebarCollapsed)}
-              className="flex items-center gap-2 px-3 py-2 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-200 dark:hover:bg-emerald-800/50 transition-colors"
-              aria-label="Search Plants"
+              className="flex items-center gap-1.5 sm:gap-2 px-3 py-1.5 sm:py-2 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-200 dark:hover:bg-emerald-800/50 transition-colors"
+              aria-label="Plant Database"
             >
-              <Search size={18} />
-              <span className="text-sm font-bold hidden sm:inline-block">Search Plants</span>
+              <Menu size={18} />
+              <span className="text-sm font-bold">Plants</span>
             </button>
 
             {/* Theme Toggle */}
@@ -159,13 +178,15 @@ export function PharmacognosyDashboard() {
                 <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400 dark:text-stone-500" />
                 <input 
                   type="text" 
-                  placeholder="Search plants..." 
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search plants or compounds..." 
                   className="w-full bg-stone-50 dark:bg-stone-800/50 border border-stone-200 dark:border-stone-700 rounded-lg pl-9 pr-3 py-2 text-sm text-stone-800 dark:text-stone-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 dark:focus:border-emerald-500 transition-all placeholder:text-stone-400 dark:placeholder:text-stone-500"
                 />
               </div>
             </div>
             <div className="flex-1 overflow-y-auto p-3 space-y-1">
-              {plantsData.map(p => (
+              {filteredPlants.map(p => (
                 <button
                   key={p.id}
                   onClick={() => {

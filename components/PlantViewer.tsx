@@ -83,10 +83,10 @@ export function PlantViewer({ plant, selectedPart, onPartClick, onPartDoubleClic
               <div 
                 className={`w-full h-full rounded-xl border-2 transition-all duration-300 relative ${
                   isSelected 
-                    ? 'border-emerald-400 bg-emerald-500/20 shadow-[0_0_30px_rgba(16,185,129,0.5)]' 
+                    ? 'border-emerald-400 bg-emerald-500/30 shadow-[0_0_30px_rgba(16,185,129,0.5)]' 
                     : isHovered 
-                      ? 'border-emerald-400 bg-emerald-400/20' 
-                      : 'border-white/60 bg-white/10 hover:border-emerald-300'
+                      ? 'border-emerald-400 bg-emerald-400/40' 
+                      : 'border-emerald-400/70 bg-emerald-400/10 hover:border-emerald-300 border-dashed backdrop-blur-[1px]'
                 }`}
               >
                 {/* Pulsing ring for selected state */}
@@ -101,10 +101,12 @@ export function PlantViewer({ plant, selectedPart, onPartClick, onPartDoubleClic
               </div>
               
               {/* Label */}
-              <div className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 px-4 py-2 rounded-full text-sm font-bold tracking-wide transition-all duration-300 shadow-lg whitespace-nowrap pointer-events-none ${
+              <div className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-bold tracking-wide transition-all duration-300 shadow-xl whitespace-nowrap pointer-events-none ${
                 isSelected 
                   ? 'bg-emerald-600 text-white scale-100 opacity-100' 
-                  : 'bg-white/95 dark:bg-stone-800/95 text-stone-700 dark:text-stone-300 scale-95 opacity-0'
+                  : isHovered
+                    ? 'bg-emerald-500 text-white scale-100 opacity-100'
+                    : 'bg-white/95 dark:bg-stone-800/95 text-stone-700 dark:text-stone-300 scale-95 opacity-100 border border-emerald-100 dark:border-stone-700'
               }`}>
                 {part.name}
               </div>
@@ -116,7 +118,10 @@ export function PlantViewer({ plant, selectedPart, onPartClick, onPartDoubleClic
       {/* Plant Title Overlay */}
       <div className="absolute top-4 left-4 sm:top-8 sm:left-8 bg-white/90 dark:bg-stone-900/90 backdrop-blur-sm px-4 py-3 sm:px-6 sm:py-4 rounded-xl sm:rounded-2xl shadow-lg border border-stone-200/50 dark:border-stone-800/50 transition-colors duration-300 z-20">
         <h2 className="text-xl sm:text-3xl font-bold text-stone-800 dark:text-stone-100">{plant.name}</h2>
-        <p className="text-xs sm:text-base text-stone-500 dark:text-stone-400 italic font-serif">{plant.scientificName}</p>
+        <p className="text-xs sm:text-base text-stone-500 dark:text-stone-400 italic font-serif mb-1">{plant.scientificName}</p>
+        <p className="text-[10px] sm:text-xs font-semibold text-emerald-600 dark:text-emerald-400 tracking-wide uppercase mt-2">
+          Tap highlighted areas to view details
+        </p>
       </div>
     </div>
   );
